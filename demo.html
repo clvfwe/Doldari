@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>돌다리 (Doldari)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  :root{
+    --blue:#1A5072;--blue-d:#15364A;--ivory:#FFF7E9;
+    --ink:#15364A;--paper:#15364A;--card:#ffffff;
+    --line:#e3dcc9;--line2:#d3c9b0;--muted:#5c6b74;--sub:#8a9198;
+    --ok:#1f7a54;--ok-bg:#e7f4ec;--warn:#a66a12;--warn-bg:#fbf1df;
+    --bad:#b3261e;--bad-bg:#fbe9e7;--soon:#7a6f5c;--soon-bg:#efe8d7;
+    --unk:#4a6577;--unk-bg:#e6eef3;--maxw:960px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(150deg,#1e5a7f 0%,#1A5072 34%,#15364A 100%);background-attachment:fixed;color:var(--ivory);
+    font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.65;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  .nav{position:sticky;top:0;z-index:50;background:rgba(21,54,74,.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,247,233,.14)}
+  .nav-in{max-width:var(--maxw);margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;cursor:pointer;color:var(--ivory)}
+  .brand .logo{width:44px;height:44px;object-fit:contain}
+  .brand small{font-weight:500;color:#9fb3c0;font-size:12px}
+  .nav-links{display:flex;gap:22px;align-items:center}
+  .nav-links a{font-size:14.5px;color:#c3d2dd;font-weight:500;cursor:pointer}
+  .nav-links a:hover{color:var(--ivory)}
+  .nav-cta{background:var(--ivory);color:var(--blue-d);padding:9px 16px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer}
+  .burger{display:none;font-size:24px;background:none;border:none;cursor:pointer;color:var(--ivory)}
+  .mobile-menu{display:none;flex-direction:column;padding:6px 22px 14px;border-bottom:1px solid rgba(255,247,233,.14);background:var(--blue-d)}
+  .mobile-menu a{padding:11px 4px;font-size:15px;font-weight:500;border-bottom:1px solid rgba(255,247,233,.12);cursor:pointer;color:var(--ivory)}
+  .mobile-menu a:last-child{border:none}
+  @media(max-width:800px){.nav-links{display:none}.burger{display:block}.mobile-menu.open{display:flex}}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .page{display:none;padding:0 0 90px}
+  .page.active{display:block}
+  .hero{text-align:center;padding:52px 22px 52px;margin-bottom:8px;background:radial-gradient(120% 90% at 70% 0%,rgba(90,150,190,.35) 0%,rgba(90,150,190,0) 55%)}
+  .herologo{width:96px;height:96px;object-fit:contain;margin-bottom:6px}
+  .hero h1{font-size:38px;line-height:1.28;letter-spacing:-.025em;margin:0 auto 16px;font-weight:770;color:#fff}
+  .hero p.sub{color:#d7e3ec;font-size:16.5px;max-width:40ch;margin:0 auto 32px}
+  .aud{display:inline-block;font-size:12.5px;font-weight:650;padding:5px 13px;border-radius:20px;margin-bottom:14px}
+  .aud.user{background:rgba(255,247,233,.16);color:var(--ivory)}
+  .aud.dev{background:rgba(255,247,233,.16);color:var(--ivory);border:1px solid rgba(255,247,233,.35)}
+  .aud.hero{background:rgba(255,255,255,.16);color:#fff}
+  .pagehead{padding-top:44px}
+  .ph{font-size:29px;font-weight:740;letter-spacing:-.02em;margin:0 0 10px;color:var(--ivory)}
+  .psub{color:#c3d2dd;font-size:16px;margin:0 0 32px;max-width:54ch;line-height:1.6}
+  .sec{font-size:19px;font-weight:680;margin:40px 0 14px;color:var(--ivory)}
+  .searchbar{display:flex;gap:9px;max-width:540px;margin:0 auto}
+  .searchbar input{flex:1;padding:15px 16px;font-size:16px;border:none;border-radius:12px;background:#fff;outline:none;color:var(--ink)}
+  .searchbar input:focus{box-shadow:0 0 0 2px #cddbe6}
+  .searchbar button{padding:0 26px;font-size:16px;font-weight:650;border:none;border-radius:12px;background:#fff;color:var(--blue);cursor:pointer}
+  .stat{margin-top:26px;font-size:14px;color:#c3d2dd}
+  .stat b{color:#fff;font-weight:650}
+  .spin{display:none;text-align:center;color:var(--muted);margin-top:40px}
+  .spin.show{display:block}
+  .result{display:none;max-width:600px;margin:36px auto 0}
+  .result.show{display:block}
+  .rcard{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 12px 40px rgba(10,30,45,.28)}
+  .rtop{display:flex;align-items:center;gap:20px;padding:24px}
+  .badge{width:80px;height:80px;border-radius:16px;flex:none;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800}
+  .rhead{font-size:17.5px;font-weight:700;margin:0 0 4px;line-height:1.3;color:var(--blue-d)}
+  .rurl{font-size:12.5px;color:#8a9198;word-break:break-all}
+  .checks{border-top:1px solid var(--line)}
+  .chk{display:flex;gap:12px;padding:13px 24px;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink)}
+  .cbody{flex:1}
+  .clabel{font-weight:600;color:var(--blue-d);font-size:14.5px}
+  .cdet{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.55}
+  .chk:last-child{border:none}
+  .ci{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
+  .ci.p{background:var(--ok-bg);color:var(--ok)}.ci.f{background:var(--bad-bg);color:var(--bad)}.ci.u{background:var(--unk-bg);color:var(--unk)}
+  .chk .extra{display:block;font-size:12.5px;color:var(--warn);margin-top:3px}
+  .savebar{display:flex;gap:8px;padding:14px 24px;border-top:1.5px solid var(--line);background:#faf7ef}
+  .savebar button{flex:1;padding:10px;border:1.5px solid var(--line2);border-radius:10px;background:#fff;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--blue)}
+  .note{padding:16px 24px;background:#faf7ef;font-size:12.5px;color:var(--muted);border-top:1.5px solid var(--line);line-height:1.6}
+  .altsoon{max-width:600px;margin:14px auto 0;border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:#fff;box-shadow:0 8px 28px rgba(10,30,45,.2)}
+  .altsoon .top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .altsoon .tt{font-size:15px;font-weight:650;color:var(--blue-d)}
+  .altsoon .tag{font-size:11px;color:var(--soon);background:var(--soon-bg);padding:3px 10px;border-radius:20px;font-weight:600}
+  .altgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;opacity:.55;pointer-events:none}
+  .altcard{border:1px solid var(--line);border-radius:12px;padding:12px}
+  .altlogo{width:32px;height:32px;border-radius:9px;background:#dfe7ee;margin-bottom:8px}
+  .altname{font-size:13px;font-weight:600;color:var(--blue-d)}
+  .altb{display:inline-block;margin-top:6px;font-size:11px;color:var(--ok);background:var(--ok-bg);padding:2px 8px;border-radius:20px;font-weight:600}
+  .altsoon .cap{font-size:12.5px;color:var(--sub);margin-top:12px;text-align:center}
+  .step{display:flex;gap:15px;margin-bottom:20px}
+  .stepn{flex:none;width:32px;height:32px;border-radius:9px;background:var(--ivory);color:var(--blue-d);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+  .step h3{font-size:15.5px;margin:0 0 3px;font-weight:650;color:var(--ivory)}
+  .step p{margin:0;font-size:14.5px;color:#c3d2dd}
+  .li{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid rgba(255,247,233,.14);font-size:15px;align-items:baseline;color:var(--ivory)}
+  .li .ic{flex:none;color:#7fe0b0;font-weight:700}
+  .li .icu{flex:none;color:#a9c4d6;font-weight:700}
+  .li .soon{margin-left:auto;font-size:11px;color:var(--soon);background:var(--soon-bg);padding:2px 9px;border-radius:20px;font-weight:600;align-self:center}
+  .prose{font-size:15.5px;line-height:1.75;max-width:60ch;color:var(--ivory)}
+  .prose.mut{color:#c3d2dd}
+  /* cert two-column */
+  .cert2{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:32px;margin-bottom:8px;box-shadow:0 10px 34px rgba(10,30,45,.22)}
+  .cert-left{text-align:center}
+  .certbadge{display:inline-flex;align-items:center;gap:8px;background:var(--blue-d);color:#fff;padding:11px 18px;border-radius:11px;font-size:15px;font-weight:600}
+  .certbadge .g{background:#39d98a;color:#04231a;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+  .cert-left .cap{font-size:12.5px;color:var(--sub);margin-top:12px}
+  .cert-right h3{margin:0 0 10px;font-size:16px;color:var(--blue-d)}
+  .cond{display:flex;gap:9px;font-size:14px;color:var(--muted);padding:6px 0}
+  .cond .ic{color:var(--ok);font-weight:700}
+  @media(max-width:680px){.cert2{grid-template-columns:1fr;gap:20px}}
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+  .plan{border:1px solid var(--line);border-radius:16px;padding:24px 20px;background:#fff;display:flex;flex-direction:column;box-shadow:0 6px 22px rgba(10,30,45,.16)}
+  .plan.feat{border-color:var(--blue);border-width:2px;box-shadow:0 14px 40px rgba(10,30,45,.3)}
+  .plan .nmrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .plan .badge2{font-size:11px;font-weight:700;color:#fff;background:var(--blue);display:inline-block;padding:3px 9px;border-radius:20px}
+  .plan .nm{font-size:15px;font-weight:650;margin-bottom:6px;color:var(--blue-d)}
+  .plan .pr{font-size:23px;font-weight:750;margin-bottom:2px;color:var(--blue-d)}
+  .plan .per{font-size:12.5px;color:var(--sub);margin-bottom:16px}
+  .plan ul{margin:0 0 18px;padding:0;list-style:none;flex:1}
+  .plan li{font-size:13.5px;color:var(--muted);padding:5px 0;display:flex;gap:8px}
+  .plan li::before{content:"·";color:var(--blue);font-weight:800}
+  .planbtn{width:100%;padding:11px;border:1.5px solid var(--line2);border-radius:10px;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:var(--blue)}
+  .planbtn.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
+  @media(max-width:680px){.plans{grid-template-columns:1fr}}
+  /* records */
+  .rec{border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;margin-top:8px;box-shadow:0 8px 26px rgba(10,30,45,.18)}
+  .recrow{display:flex;align-items:center;gap:14px;padding:15px 20px;border-bottom:1px solid var(--line)}
+  .recrow:last-child{border:none}
+  .recg{width:40px;height:40px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800}
+  .recu{font-size:14.5px;font-weight:600;color:var(--blue-d)}
+  .recd{font-size:12px;color:#8a9198}
+  .recx{margin-left:auto;background:none;border:none;color:var(--sub);cursor:pointer;font-size:18px;padding:4px 8px}
+  .recempty{text-align:center;color:#c3d2dd;font-size:14.5px;padding:40px 20px;border:1.5px dashed rgba(255,247,233,.25);border-radius:14px;margin-top:8px}
+  .payflow{max-width:520px;margin:8px auto 0}
+  .footer{border-top:1px solid rgba(255,247,233,.14);margin-top:40px}
+  .footer-in{max-width:var(--maxw);margin:0 auto;padding:24px 22px;font-size:13px;color:#9fb3c0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-in">
+    <div class="brand" onclick="go('home')"><img src="/logo.png" alt="" class="logo"/>돌다리 <small>Doldari</small></div>
+    <div class="nav-links">
+      <a onclick="go('home')">홈</a>
+      <a onclick="go('records')">내 기록</a>
+      <a onclick="go('how')">작동 원리·개인정보</a>
+      <a onclick="go('cert')">인증 배지</a>
+      <a onclick="go('premium')">프리미엄</a>
+      <span class="nav-cta" onclick="go('home');focusInput()">앱 검사하기</span>
+    </div>
+    <button class="burger" onclick="tm()" aria-label="메뉴">☰</button>
+  </div>
+  <div class="mobile-menu" id="mm">
+    <a onclick="go('home')">홈</a><a onclick="go('records')">내 기록</a>
+    <a onclick="go('how')">작동 원리·개인정보</a><a onclick="go('cert')">인증 배지</a>
+    <a onclick="go('premium')">프리미엄</a><a onclick="go('home');focusInput()">앱 검사하기</a>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <img src="/logo.png" alt="돌다리" class="herologo"/>
+    <h1>돌다리도 두들겨 보고<br>건너세요</h1>
+    <p class="sub">잘 모르는 웹앱에 이메일이나 비밀번호를 넣기 전에, 그 앱이 내 정보를 어떻게 다루는지 주소만 넣어 미리 살펴보세요.</p>
+    <div class="searchbar">
+      <input id="url" type="text" placeholder="앱 주소를 붙여넣으세요 (예: myapp.com)" autocomplete="off" />
+      <button onclick="runScan()">검사</button>
+    </div>
+    <div class="stat">AI로 만든 코드의 <b>약 45%</b>가 보안 취약점을 가진 채로 배포된다고 해요.</div>
+  </div>
+  <div class="wrap">
+    <div class="spin" id="spin">살펴보는 중이에요…</div>
+    <div class="result" id="result">
+      <div class="rcard">
+        <div class="rtop">
+          <div class="badge" id="badge">–</div>
+          <div><p class="rhead" id="rhead"></p><div class="rurl" id="rurl"></div></div>
+        </div>
+        <div class="checks" id="checks"></div>
+        <div class="savebar"><button id="saveBtn" onclick="saveCurrent()">이 앱을 내 기록에 저장</button></div>
+        <div class="note" id="note"></div>
+      </div>
+      <div class="altsoon">
+        <div class="top"><span class="tt">이 앱 대신, 안전한 앱은 어때요?</span><span class="tag">준비 중</span></div>
+        <div class="altgrid">
+          <div class="altcard"><div class="altlogo"></div><div class="altname">노트키퍼</div><span class="altb">A등급</span></div>
+          <div class="altcard"><div class="altlogo"></div><div class="altname">세이프폼</div><span class="altb">A등급</span></div>
+          <div class="altcard"><div class="altlogo"></div><div class="altname">클린독</div><span class="altb">A등급</span></div>
+        </div>
+        <div class="cap">더 안전한 대체 앱을 함께 추천하는 기능을 준비하고 있어요. 지금 보이는 앱은 예시예요.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECORDS -->
+<div class="page" id="page-records">
+  <div class="wrap pagehead">
+    <h1 class="ph">내 기록</h1>
+    <p class="psub">검사한 앱을 여기에 모아둘 수 있어요. 이 목록은 서버로 보내지 않고, 이 브라우저 안에만 저장돼요. 언제든 지울 수 있어요.</p>
+    <div id="recList"></div>
+  </div>
+</div>
+
+<!-- HOW + PRIVACY merged -->
+<div class="page" id="page-how">
+  <div class="wrap pagehead">
+    <h1 class="ph">어떻게 살펴보나요</h1>
+    <p class="psub">돌다리는 다리가 튼튼한지 겉에서 두들겨 볼 뿐, 다리를 부수거나 건너편으로 몰래 넘어가지 않아요. 누구나 볼 수 있는 정보만 확인합니다.</p>
+    <div class="step"><div class="stepn">1</div><div><h3>주소를 넣으면</h3><p>검사할 앱의 주소 하나면 돼요. 로그인도, 소스 코드도 필요 없어요.</p></div></div>
+    <div class="step"><div class="stepn">2</div><div><h3>공개된 정보만 봐요</h3><p>서버가 브라우저에 보내주는 응답, 암호화 인증서, 이미 공개된 코드처럼 누구나 확인할 수 있는 것만 봅니다.</p></div></div>
+    <div class="step"><div class="stepn">3</div><div><h3>쉬운 말로 알려줘요</h3><p>어려운 보안 용어 대신 바로 이해되는 말로 A부터 F까지 등급을 매겨요.</p></div></div>
+
+    <div class="sec">확인하는 항목</div>
+    <div class="li"><span class="ic">✓</span><span>암호화 연결 (HTTPS·인증서)</span></div>
+    <div class="li"><span class="ic">✓</span><span>브라우저 코드 속 비밀 키 노출</span></div>
+    <div class="li"><span class="ic">✓</span><span>개인정보 처리방침 유무</span></div>
+    <div class="li"><span class="ic">✓</span><span>보안 헤더·쿠키 보호·CORS 설정</span></div>
+    <div class="li"><span class="ic">✓</span><span>서버 정보·기술 노출</span></div>
+    <div class="li"><span class="ic">✓</span><span>암호화 페이지 속 안전하지 않은 항목(믹스드 콘텐츠)</span></div>
+    <div class="li"><span class="ic">✓</span><span>알려진 위험 버전 라이브러리 (CVE)</span></div>
+    <div class="li"><span class="ic">✓</span><span>이메일 사칭 방지 설정 (SPF·DMARC)</span></div>
+    <div class="li"><span class="ic">✓</span><span>인증서 투명성 기록 (CT 로그)</span></div>
+
+    <p class="prose mut" style="margin-top:22px">돌다리는 존재하지 않는 경로를 두드려 보거나, 방화벽을 떠보거나, 실제로 데이터를 요청해 보는 식의 점검은 하지 않아요. 이런 방식은 상대 서버에 실제로 접근을 시도하는 일이라, 겉에서 드러난 정보만 보는 지금 방식과는 달라요. 그래서 어떤 앱에 돌려봐도 부담이 없어요.</p>
+
+    <h1 class="ph" style="margin-top:52px">개인정보</h1>
+    <p class="psub">개인정보를 지켜주는 서비스라면, 그 자신도 정보를 함부로 모아선 안 되겠죠. 그래서 돌다리는 처음부터 정보를 최대한 남기지 않도록 만들었어요.</p>
+    <div class="li"><span class="ic">✓</span><span>로그인이 없어요. 누가 무엇을 검사했는지 계정에 남기지 않아요.</span></div>
+    <div class="li"><span class="ic">✓</span><span>검사 기록은 이 브라우저 안에만 남고, 서버로 보내지 않아요.</span></div>
+    <div class="li"><span class="ic">✓</span><span>사람에 대한 정보가 아니라, 앱이 몇 등급인지만 다뤄요.</span></div>
+    <div class="li"><span class="ic">✓</span><span>상대 서버를 찔러보지 않고, 이미 공개된 응답만 읽어요.</span></div>
+    <p class="prose mut" style="margin-top:22px">수익도 개인정보와 무관하게 설계하고 있어요. 이용자의 검사 기록이나 어떤 앱을 쓰는지를 파는 일은 하지 않아요.</p>
+  </div>
+</div>
+
+<!-- CERT (two-column, payment 구체화) -->
+<div class="page" id="page-cert">
+  <div class="wrap pagehead">
+    <div class="aud dev">앱 운영자·개발자용</div>
+    <h1 class="ph">인증 배지</h1>
+    <p class="psub">내 앱을 운영하는 분들을 위한 메뉴예요. 돌다리에서 A등급을 받은 웹앱은, 그 사실을 자기 사이트에 인증 배지로 보여줄 수 있어요. 이용자에게는 신뢰의 표시가 되고요.</p>
+    <div class="cert2">
+      <div class="cert-left">
+        <div class="certbadge"><span class="g">✓</span> 돌다리 인증 · A등급</div>
+        <div class="cap">배지를 누르면 최신 검사 결과가 열려요.</div>
+      </div>
+      <div class="cert-right">
+        <h3>받을 수 있는 조건</h3>
+        <div class="cond"><span class="ic">✓</span><span>돌다리 검사에서 A등급</span></div>
+        <div class="cond"><span class="ic">✓</span><span>치명적 위험 항목(비밀 키 노출 등)이 없을 것</span></div>
+        <div class="cond"><span class="ic">✓</span><span>개인정보 처리방침을 갖추고 있을 것</span></div>
+      </div>
+    </div>
+
+    <div class="sec">인증 배지 플랜</div>
+    <div class="plans">
+      <div class="plan">
+        <div class="nmrow"><div class="nm">기본 인증</div></div>
+        <div class="pr">월 4,900원</div>
+        <div class="per">도메인 1개</div>
+        <ul><li>인증 배지 1개 발급</li><li>월 1회 자동 재검사</li><li>등급 하락 시 이메일 안내</li></ul>
+        <button class="planbtn" onclick="pay('cert','기본 인증','월 4,900원')">선택</button>
+      </div>
+      <div class="plan feat">
+        <div class="nmrow"><div class="nm">비즈니스 인증</div><span class="badge2">추천</span></div>
+        <div class="pr">월 12,000원</div>
+        <div class="per">도메인 5개</div>
+        <ul><li>도메인 5개까지 배지</li><li>주 1회 자동 재검사</li><li>우선 지원</li><li>재검사 리포트 제공</li></ul>
+        <button class="planbtn pri" onclick="pay('cert','비즈니스 인증','월 12,000원')">선택</button>
+      </div>
+      <div class="plan">
+        <div class="nmrow"><div class="nm">엔터프라이즈</div></div>
+        <div class="pr">별도 문의</div>
+        <div class="per">대량 도메인·맞춤</div>
+        <ul><li>맞춤 검사 항목</li><li>대량 도메인</li><li>전담 지원·계약</li></ul>
+        <button class="planbtn" onclick="pay('cert','엔터프라이즈','별도 문의')">문의</button>
+      </div>
+    </div>
+    <div id="pay-cert" class="payflow"></div>
+  </div>
+</div>
+
+<!-- PREMIUM (payment 구체화) -->
+<div class="page" id="page-premium">
+  <div class="wrap pagehead">
+    <div class="aud user">이용자용</div>
+    <h1 class="ph">프리미엄</h1>
+    <p class="psub">한 번 검사하고 끝이 아니라, 내가 쓰는 앱을 계속 지켜봐 주는 기능이에요. 무료로도 검사는 얼마든지 할 수 있어요.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="nmrow"><div class="nm">무료</div></div>
+        <div class="pr">0원</div>
+        <div class="per">언제나 무료</div>
+        <ul><li>앱 안전 검사</li><li>A~F 등급·항목별 이유</li><li>내 기록(기기 저장)</li></ul>
+        <button class="planbtn" onclick="go('home');focusInput()">지금 검사하기</button>
+      </div>
+      <div class="plan feat">
+        <div class="nmrow"><div class="nm">프리미엄</div><span class="badge2">추천</span></div>
+        <div class="pr">월 4,900원</div>
+        <div class="per">연간 결제 시 2개월 무료</div>
+        <ul><li>등록한 앱 지속 모니터링</li><li>보안 상태 변경 알림</li><li>개인정보 유출 경보</li><li>브라우저 확장 기능</li></ul>
+        <button class="planbtn pri" onclick="pay('prem','프리미엄','월 4,900원')">구독</button>
+      </div>
+      <div class="plan">
+        <div class="nmrow"><div class="nm">팀</div></div>
+        <div class="pr">월 12,900원</div>
+        <div class="per">5인까지</div>
+        <ul><li>프리미엄의 모든 것</li><li>팀 공유 대시보드</li><li>정기 리포트</li></ul>
+        <button class="planbtn" onclick="pay('prem','팀','월 12,900원')">구독</button>
+      </div>
+    </div>
+    <div id="pay-prem" class="payflow"></div>
+  </div>
+</div>
+
+<div class="footer"><div class="footer-in">
+  <div>© 2026 돌다리 (Doldari)</div>
+  <div>돌다리는 겉으로 드러난 안전 신호를 보여줄 뿐, 완벽한 안전을 보장하지는 않아요.</div>
+</div></div>
+
+<script>
+const $=(s)=>document.querySelector(s);
+const gc={A:['var(--ok)','var(--ok-bg)'],B:['var(--ok)','var(--ok-bg)'],C:['var(--warn)','var(--warn-bg)'],D:['var(--warn)','var(--warn-bg)'],E:['var(--bad)','var(--bad-bg)'],F:['var(--bad)','var(--bad-bg)']};
+let CUR=null;
+function go(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));$('#page-'+p).classList.add('active');$('#mm').classList.remove('open');clearPay();if(p==='records')renderRecords();window.scrollTo({top:0,behavior:'smooth'})}
+function tm(){$('#mm').classList.toggle('open')}
+function focusInput(){setTimeout(()=>$('#url').focus(),100)}
+
+async function runScan(){
+  const v=$('#url').value.trim();if(!v)return;
+  $('#result').classList.remove('show');$('#spin').classList.add('show');
+  try{const r=await(await fetch('/scan?url='+encodeURIComponent(v))).json();
+    if(r.error)throw new Error(r.error);CUR=r;render(r);}
+  catch(e){$('#spin').classList.remove('show');alert('이 주소는 살펴볼 수 없었어요: '+e.message);}
+}
+function render(r){
+  $('#spin').classList.remove('show');
+  const[fg,bg]=gc[r.letter]||gc.F;const b=$('#badge');b.textContent=r.letter;b.style.color=fg;b.style.background=bg;
+  $('#rhead').textContent=r.verdict.headline;$('#rurl').textContent=r.target;
+  const LABEL={https:'암호화 연결(HTTPS)',secrets:'비밀 키 노출',privacy:'개인정보 처리방침',headers:'보안 헤더',cookies:'쿠키 보호',cors:'외부 접근(CORS)',mixed:'믹스드 콘텐츠',stack:'서버 정보 노출',cve:'오래된 라이브러리',email:'이메일 사칭 방지(SPF·DMARC)',ct:'인증서 투명성(CT)'};
+  const box=$('#checks');box.innerHTML='';
+  for(const c of r.checks){if(!c.user)continue;
+    const cls=c.unknown?'u':(c.pass?'p':'f');const mk=c.unknown?'?':(c.pass?'✓':'!');
+    const label=LABEL[c.id]||'';
+    // clean pass → show label only (compact). fail/unknown → show detail.
+    const showDetail = !c.pass || c.unknown || c.extra;
+    const detail = showDetail ? `<div class="cdet">${c.user}${c.extra?`<span class="extra">↳ ${c.extra}</span>`:''}</div>` : '';
+    const d=document.createElement('div');d.className='chk';
+    d.innerHTML=`<div class="ci ${cls}">${mk}</div><div class="cbody"><div class="clabel">${label}</div>${detail}</div>`;
+    box.appendChild(d);}
+  $('#note').textContent=r.disclaimer;
+  $('#saveBtn').textContent='이 앱을 내 기록에 저장';
+  $('#result').classList.add('show');
+  const y=$('#result').getBoundingClientRect().top+window.scrollY-80;window.scrollTo({top:y,behavior:'smooth'});
+}
+
+// ---- 내 기록 (localStorage) ----
+function getRecs(){try{return JSON.parse(localStorage.getItem('doldari_recs')||'[]')}catch{return[]}}
+function setRecs(a){localStorage.setItem('doldari_recs',JSON.stringify(a))}
+function saveCurrent(){
+  if(!CUR)return;const recs=getRecs();
+  const i=recs.findIndex(x=>x.target===CUR.target);
+  const item={target:CUR.target,letter:CUR.letter,at:new Date().toISOString().slice(0,10)};
+  if(i>=0)recs[i]=item;else recs.unshift(item);
+  setRecs(recs);$('#saveBtn').textContent='저장됐어요 · 내 기록에서 볼 수 있어요';
+}
+function delRec(t){setRecs(getRecs().filter(x=>x.target!==t));renderRecords()}
+function renderRecords(){
+  const recs=getRecs();const el=$('#recList');
+  if(!recs.length){el.innerHTML='<div class="recempty">아직 저장한 앱이 없어요. 홈에서 앱을 검사하고 내 기록에 저장해보세요.</div>';return}
+  el.innerHTML='<div class="rec">'+recs.map(r=>{
+    const[fg,bg]=gc[r.letter]||gc.F;
+    return `<div class="recrow"><div class="recg" style="color:${fg};background:${bg}">${r.letter}</div>
+      <div><div class="recu">${r.target.replace(/^https?:\/\//,'')}</div><div class="recd">${r.at} 검사</div></div>
+      <button class="recx" onclick="delRec('${r.target}')" aria-label="삭제">✕</button></div>`;
+  }).join('')+'</div>';
+}
+
+// ---- 결제 흐름 (준비 중, 실제 결제 없음) ----
+function clearPay(){document.querySelectorAll('.payflow').forEach(e=>e.innerHTML='')}
+function pay(area,name,price){
+  clearPay();
+  const el=$('#pay-'+area);
+  el.innerHTML=`<div class="rcard" style="margin-top:20px"><div style="padding:22px">
+    <div style="font-size:12px;font-weight:700;color:var(--soon);background:var(--soon-bg);display:inline-block;padding:3px 10px;border-radius:20px;margin-bottom:12px">준비 중</div>
+    <div style="font-size:17px;font-weight:700;color:var(--blue-d);margin-bottom:4px">${name} · ${price}</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:16px">아래는 실제 결제가 연결되기 전 미리 보여드리는 화면이에요. 지금은 결제가 진행되지 않아요.</div>
+    <div style="display:grid;gap:10px;max-width:340px">
+      <input disabled placeholder="카드 번호 (결제 연동 준비 중)" style="padding:12px;border:1.5px solid var(--line);border-radius:10px;background:#f5f1e8;color:var(--sub)">
+      <div style="display:flex;gap:10px">
+        <input disabled placeholder="MM/YY" style="flex:1;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:#f5f1e8;color:var(--sub)">
+        <input disabled placeholder="CVC" style="flex:1;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:#f5f1e8;color:var(--sub)">
+      </div>
+      <button onclick="alert('결제 연동은 아직 준비 중이에요. 지금은 화면만 미리 보여드려요.')" style="padding:12px;border:none;border-radius:10px;background:var(--line2);color:#fff;font-size:14px;font-weight:650;cursor:pointer">결제 진행 (준비 중)</button>
+    </div>
+  </div></div>`;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+$('#url').addEventListener('keydown',e=>{if(e.key==='Enter')runScan()});
+</script>
+</body>
+</html>
