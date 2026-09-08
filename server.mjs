@@ -2,7 +2,7 @@ import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { scan } from './scanner.js';
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, `http://localhost:${PORT}`);
