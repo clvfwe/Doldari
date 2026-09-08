@@ -1,0 +1,13 @@
+{
+  "name": "doldari",
+  "version": "1.0.0",
+  "description": "돌다리 - 웹앱 보안 안전성 검사",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
